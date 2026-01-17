@@ -1,0 +1,65 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Student {
+  id            String   @id @default(uuid())
+  name          String
+  parentMobile  String
+  collegeName   String
+  pucRollNumber String   @unique // Used for login
+  createdAt     DateTime @default(now())
+  
+  results       Result[]
+}
+
+model Question {
+  id            String   @id @default(uuid())
+  text          String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctOption String   // A, B, C, D
+  subject       String   // Mathematics, Physics, Chemistry
+  createdAt     DateTime @default(now())
+  
+  responses     Response[]
+}
+
+model Result {
+  id          String   @id @default(uuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id])
+  
+  marksMath   Int      @default(0)
+  marksPhy    Int      @default(0)
+  marksChem   Int      @default(0)
+  totalMarks  Int      @default(0)
+  
+  completedAt DateTime @default(now())
+  
+  responses   Response[]
+}
+
+model Response {
+  id         String   @id @default(uuid())
+  resultId   String
+  result     Result   @relation(fields: [resultId], references: [id])
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+  answer     String?  // A, B, C, D or null
+  isCorrect  Boolean  @default(false)
+}

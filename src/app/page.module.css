@@ -1,0 +1,227 @@
+/* Page Layout */
+.pageWrapper {
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  background-color: #fff;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.headerInner {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brandTitle {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.brandSubtitle {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Hero Section */
+.heroMain {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 60px 0;
+}
+
+.heroGrid {
+  display: grid;
+  gap: 3.5rem;
+  align-items: center;
+}
+
+/* Left Content */
+.badge {
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding: 0.25rem 1rem;
+  border-radius: 9999px;
+  background-color: #EFF6FF;
+  /* blue-50 */
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.heroHeading {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+}
+
+.textAccent {
+  color: var(--color-accent);
+}
+
+.heroDescription {
+  font-size: 1.125rem;
+  color: var(--color-text-muted);
+  max-width: 36rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.ctaGroup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.statCard {
+  display: flex;
+  gap: 2rem;
+  background-color: #fff;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.5rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Right Card */
+.visualCardWrapper {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.visualCard {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  max-width: 28rem;
+  padding: 2rem;
+}
+
+.glowEffect {
+  position: absolute;
+  top: -2.5rem;
+  right: -2.5rem;
+  width: 10rem;
+  height: 10rem;
+  background-color: #FFEDD5;
+  /* orange-100 */
+  border-radius: 50%;
+  filter: blur(40px);
+  z-index: 0;
+}
+
+.cardTitle {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.cardContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admissionsSection {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.admissionsLabel {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  margin-bottom: 0.25rem;
+}
+
+.admissionsPhone {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+/* Footer */
+.footer {
+  background-color: var(--color-primary-dark);
+  color: #fff;
+}
+
+.footerInner {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.875rem;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 1.5rem;
+  font-weight: 600;
+}
+
+.footerLink {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.footerLink:hover {
+  text-decoration: underline;
+}
+
+/* Media Queries */
+@media (min-width: 768px) {
+  .brandTitle {
+    font-size: 1.5rem;
+  }
+
+  .heroGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .heroHeading {
+    font-size: 3rem;
+  }
+
+  .footerInner {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 1024px) {
+  .heroHeading {
+    font-size: 3.75rem;
+  }
+}

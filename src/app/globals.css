@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* Official MITT Color System */
+  --color-primary: #0B3A66;
+  /* Deep Navy - Trust */
+  --color-primary-dark: #072644;
+  --color-accent: #FF9F1C;
+  /* Orange - Action */
+  --color-accent-hover: #E88E0C;
+
+  --color-success: #2ECC71;
+  --color-error: #E74C3C;
+  --color-warning: #F1C40F;
+
+  --color-bg: #F7F9FC;
+  /* Light Blue-Grey - Clinical/Clean */
+  --color-surface: #FFFFFF;
+
+  --color-text-main: #1E293B;
+  --color-text-cards: #334155;
+  --color-text-muted: #64748B;
+
+  --border-color: #E2E8F0;
+
+  --font-heading: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+/* Official Component Classes */
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 28px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-family: var(--font-heading);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+  font-size: 15px;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: rgb(186, 213, 223);
+  box-shadow: 0 4px 6px -1px rgba(11, 58, 102, 0.2);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.btn-accent {
+  background-color: var(--color-accent);
+  color: #c2b9b9;
+  box-shadow: 0 4px 6px -1px rgba(193, 118, 14, 0.25);
+}
+
+.btn-accent:hover {
+  background-color: var(--color-accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 2px solid var(--color-primary);
+  color: var(--color-primary);
+}
+
+.btn-outline:hover {
+  background-color: var(--color-primary);
+  color: rgb(231, 229, 226);
+}
+
+/* Cards */
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px -5px rgba(21, 64, 237, 0.05);
+  /* Soft, professional shadow */
+}
+
+/* Inputs */
+.input-official {
+  width: 100%;
+  padding: 14px 16px;
+  /* Generous padding */
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  background: #a7d9ed;
+  font-size: 15px;
+  color: var(--color-text-main);
+  transition: all 0.2s;
+}
+
+.input-official:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(11, 58, 102, 0.1);
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-cards);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Helpers */
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-accent {
+  color: var(--color-accent);
+}
