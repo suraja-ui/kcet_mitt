@@ -3,6 +3,8 @@ import { cookies } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import ExamClient from './ExamClient';
 
+export const dynamic = 'force-dynamic';
+
 export default async function ExamPage() {
     const cookieStore = await cookies();
     const studentId = cookieStore.get('studentId')?.value;

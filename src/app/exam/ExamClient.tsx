@@ -161,6 +161,23 @@ export default function ExamClient({ questions, studentId, subject }: Props) {
     }
 
     // ---------------- RENDER: ACTIVE EXAM ----------------
+    if (questions.length === 0) {
+        return (
+            <div style={{ ...styles.page, display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                <div style={{ textAlign: 'center' }}>
+                    <h2 style={{ color: '#fff' }}>No Questions Found</h2>
+                    <p style={{ color: '#94a3b8' }}>Please contact admin to add questions for this subject.</p>
+                    <button
+                        onClick={() => router.push('/')}
+                        style={{ ...styles.primaryBtn, marginTop: 20, background: '#f59e0b', color: '#0f172a' }}
+                    >
+                        Back to Portal
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     if (!currentQuestion) return <div style={styles.page}>Loading...</div>;
 
     const formatTime = (seconds: number) => {

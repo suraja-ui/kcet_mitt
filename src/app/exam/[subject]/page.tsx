@@ -3,6 +3,9 @@ import { cookies } from 'next/headers';
 import { prisma } from '@/lib/prisma';
 import ExamClient from '../ExamClient';
 
+export const dynamic = 'force-dynamic';
+
+
 export default async function SubjectExamPage({
     params
 }: {
