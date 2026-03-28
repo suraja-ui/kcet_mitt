@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+
 export default function StudentLogin() {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -27,60 +28,214 @@ export default function StudentLogin() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
             });
-            if (res.ok) router.push('/exam');
-        } catch (err) { } finally { setLoading(false); }
+            if (res.ok) {
+                // Clear any previous exam selection to force new selection
+                document.cookie = 'examType=; path=/; max-age=0';
+                router.push('/student');
+            } else {
+                const data = await res.json();
+                alert(data.error || 'Login failed');
+            }
+        } catch (err) {
+            console.error(err);
+            alert('An error occurred. Please try again.');
+        } finally { setLoading(false); }
     };
 
     return (
-        <div className="min-h-screen bg-[#F0F2F5] flex flex-col items-center justify-center p-4">
+        <div style={styles.page}>
+            {/* Background */}
+            <div style={styles.bgOverlay} />
 
-            {/* Official Header Strip */}
-            <div className="absolute top-0 w-full h-2 bg-[#0B3A66]"></div>
-
-            <div className="card w-full max-w-lg bg-white shadow-xl shadow-slate-200/50 overflow-hidden">
-                <div className="bg-white border-b border-gray-100 p-8 text-center pb-6">
-                    <h1 className="text-2xl font-bold text-[#0B3A66]">Candidate Verification</h1>
-                    <p className="text-slate-500 text-sm mt-2">Enter your official details to proceed to the examination hall.</p>
+            <div style={styles.container}>
+                {/* Brand */}
+                <div style={styles.brandContainer}>
+                    <div style={styles.logoWrapper}>
+                        <span style={{ fontSize: '20px', fontWeight: 900, color: '#fff', letterSpacing: '-1px' }}>P2</span>
+                    </div>
                 </div>
 
-                <div className="p-8 pt-6">
-                    <form onSubmit={handleSubmit} className="space-y-5">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="col-span-2">
-                                <label className="input-label">Full Candidate Name</label>
-                                <input type="text" name="name" required className="input-official" placeholder="As per records" value={formData.name} onChange={handleChange} />
+                <h1 style={styles.pageTitle}>Student Verification</h1>
+                <p style={styles.pageSub}>Enter your details to access the exam hall</p>
+
+                <div style={styles.card}>
+                    <form onSubmit={handleSubmit} style={styles.form}>
+                        <div style={styles.grid}>
+                            <div style={styles.colFull}>
+                                <label style={styles.label}>Full Candidate Name</label>
+                                <input
+                                    type="text"
+                                    name="name"
+                                    required
+                                    style={styles.input}
+                                    placeholder="As per records"
+                                    value={formData.name}
+                                    onChange={handleChange}
+                                />
                             </div>
 
-                            <div>
-                                <label className="input-label">Roll Number</label>
-                                <input type="text" name="pucRollNumber" required className="input-official" placeholder="10 Digit ID" value={formData.pucRollNumber} onChange={handleChange} />
+                            <div style={styles.colHalf}>
+                                <label style={styles.label}>Roll Number</label>
+                                <input
+                                    type="text"
+                                    name="pucRollNumber"
+                                    required
+                                    style={styles.input}
+                                    placeholder="Roll No / ID"
+                                    value={formData.pucRollNumber}
+                                    onChange={handleChange}
+                                />
                             </div>
 
-                            <div>
-                                <label className="input-label">Parent Mobile</label>
-                                <input type="tel" name="parentMobile" required className="input-official" placeholder="+91" value={formData.parentMobile} onChange={handleChange} />
+                            <div style={styles.colHalf}>
+                                <label style={styles.label}>Parent Mobile</label>
+                                <input
+                                    type="tel"
+                                    name="parentMobile"
+                                    required
+                                    style={styles.input}
+                                    placeholder="+91"
+                                    value={formData.parentMobile}
+                                    onChange={handleChange}
+                                />
                             </div>
 
-                            <div className="col-span-2">
-                                <label className="input-label">Current Institution / College</label>
-                                <input type="text" name="collegeName" required className="input-official" placeholder="College Name & Place" value={formData.collegeName} onChange={handleChange} />
+                            <div style={styles.colFull}>
+                                <label style={styles.label}>Current Institution / College</label>
+                                <input
+                                    type="text"
+                                    name="collegeName"
+                                    required
+                                    style={styles.input}
+                                    placeholder="College Name & Place"
+                                    value={formData.collegeName}
+                                    onChange={handleChange}
+                                />
                             </div>
                         </div>
 
-                        <div className="pt-4 border-t border-gray-100 flex items-center justify-between gap-4">
-                            <Link href="/" className="text-sm font-semibold text-slate-500 hover:text-[#0B3A66]">
-                                Cancel
+                        <div style={styles.actions}>
+                            <Link href="/" style={styles.cancelLink}>
+                                Back to Home
                             </Link>
-                            <button type="submit" className="btn btn-primary px-8">
-                                {loading ? 'Verifying...' : 'Enter Assessment'}
+                            <button type="submit" style={styles.submitBtn}>
+                                {loading ? 'Verifying...' : 'Proceed to Exam'}
                             </button>
                         </div>
                     </form>
                 </div>
-                <div className="bg-[#F8FAFC] p-4 text-center border-t border-gray-100">
-                    <span className="text-xs text-slate-400 font-medium">Official MITT Assessment System • v2.0 Secured</span>
+
+                <div style={styles.footer}>
+                    MIT Thandavapura • Mock Exam Portal
                 </div>
             </div>
         </div>
     );
 }
+
+const styles: Record<string, React.CSSProperties> = {
+    page: {
+        minHeight: '100vh',
+        background: '#0B1121', // Dark Navy
+        fontFamily: "'Outfit', sans-serif",
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        color: '#f8fafc',
+        padding: '20px'
+    },
+    bgOverlay: {
+        position: 'absolute',
+        inset: 0,
+        background: 'radial-gradient(circle at top, rgba(234, 88, 12, 0.1) 0%, transparent 60%)', // Orange glow
+        zIndex: 0
+    },
+    container: {
+        position: 'relative',
+        zIndex: 10,
+        width: '100%',
+        maxWidth: '480px',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '0px'
+    },
+    brandContainer: {
+        marginBottom: '24px'
+    },
+    logoWrapper: {
+        width: '80px',
+        height: '80px',
+        background: 'linear-gradient(135deg, #EA580C, #c2410c)',
+        borderRadius: '50%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        boxShadow: '0 0 40px rgba(234,88,12,0.4)',
+        overflow: 'hidden',
+        padding: '0'
+    },
+    pageTitle: {
+        fontSize: '24px',
+        fontWeight: 700,
+        color: '#fff',
+        marginBottom: '8px'
+    },
+    pageSub: {
+        fontSize: '14px',
+        color: '#94a3b8',
+        marginBottom: '32px'
+    },
+
+    card: {
+        width: '100%',
+        background: 'rgba(30, 41, 59, 0.6)',
+        backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        borderRadius: '24px',
+        overflow: 'hidden',
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+    },
+
+    form: { padding: '32px' },
+    grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' },
+    colFull: { gridColumn: '1 / -1' },
+    colHalf: { gridColumn: 'span 1' },
+
+    label: { display: 'block', fontSize: '12px', color: '#cbd5e1', marginBottom: '8px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' },
+    input: {
+        width: '100%',
+        background: 'rgba(11, 17, 33, 0.6)',
+        border: '1px solid rgba(255,255,255,0.1)',
+        borderRadius: '10px',
+        padding: '14px 16px',
+        color: '#fff',
+        fontSize: '15px',
+        outline: 'none',
+        transition: 'all 0.2s'
+    },
+
+    actions: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+    cancelLink: { color: '#94a3b8', fontSize: '14px', textDecoration: 'none', fontWeight: 500 },
+    submitBtn: {
+        background: 'linear-gradient(135deg, #EA580C, #c2410c)', // MITT Orange
+        color: '#fff',
+        border: 'none',
+        padding: '14px 32px',
+        borderRadius: '10px',
+        fontWeight: 600,
+        fontSize: '15px',
+        cursor: 'pointer',
+        boxShadow: '0 4px 15px rgba(234, 88, 12, 0.3)'
+    },
+
+    footer: {
+        marginTop: '24px',
+        textAlign: 'center',
+        fontSize: '12px',
+        color: '#64748b',
+        fontWeight: 500
+    }
+};

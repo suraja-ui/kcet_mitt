@@ -5,10 +5,13 @@ import { cookies } from 'next/headers';
 export async function POST(request: Request) {
     try {
         const body = await request.json();
+        console.log('Login Request Body:', body); // Debug log
+
         const { name, parentMobile, collegeName, pucRollNumber } = body;
 
         // Basic validation
         if (!name || !parentMobile || !collegeName || !pucRollNumber) {
+            console.log('Validation failed:', { name, parentMobile, collegeName, pucRollNumber });
             return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
         }
 
@@ -25,11 +28,17 @@ export async function POST(request: Request) {
 
         // Set cookie
         const cookieStore = await cookies();
-        cookieStore.set('studentId', student.id, { httpOnly: true, path: '/' });
+        cookieStore.set('studentId', student.id, {
+            httpOnly: true,
+            path: '/',
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7 // 1 week
+        });
 
         return NextResponse.json({ success: true, studentId: student.id });
     } catch (error) {
-        console.error(error);
+        console.error('Login Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
 }

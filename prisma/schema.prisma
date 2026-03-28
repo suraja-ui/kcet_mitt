@@ -1,9 +1,10 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -15,51 +16,103 @@ model Admin {
 }
 
 model Student {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   name          String
   parentMobile  String
   collegeName   String
-  pucRollNumber String   @unique // Used for login
-  createdAt     DateTime @default(now())
-  
+  pucRollNumber String    @unique
+  createdAt     DateTime  @default(now())
+  lastLoginAt   DateTime?
   results       Result[]
 }
 
-model Question {
+model Exam {
+  id               String     @id @default(uuid())
+  title            String
+  subject          String
+  topic            String?
+  examType         String     @default("KCET")    // KCET | PGCET_MBA | PGCET_MCA | CUSTOM
+  difficulty       String     @default("Medium")   // Easy | Medium | Hard
+  marksPerQuestion Float      @default(1)
+  negativeMarking  Float      @default(0)
+  durationMinutes  Int        @default(60)
+  isLive           Boolean    @default(false)
+  isDemo           Boolean    @default(false)
+  randomizeQuestions Boolean    @default(false)
+  publishedAt      DateTime?
+  cdnUrl           String?    // Firebase Storage public URL for questions JSON
+  createdAt        DateTime   @default(now())
+  questions        ExamQuestion[]
+  results          Result[]
+}
+
+model ExamQuestion {
   id            String   @id @default(uuid())
+  examId        String
   text          String
+  imageUrl      String?
   optionA       String
   optionB       String
   optionC       String
   optionD       String
-  correctOption String   // A, B, C, D
-  subject       String   // Mathematics, Physics, Chemistry
-  createdAt     DateTime @default(now())
-  
+  correctOption String
+  subject       String
+  difficulty    String   @default("Medium")
+  orderIndex    Int      @default(0)
+  exam          Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  responses     ExamResponse[]
+}
+
+model Question {
+  id            String     @id @default(uuid())
+  text          String
+  imageUrl      String?
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  correctOption String
+  subject       String
+  examType      String     @default("KCET") // "KCET", "PGCET_MBA", "PGCET_MCA"
+  createdAt     DateTime   @default(now())
   responses     Response[]
 }
 
 model Result {
-  id          String   @id @default(uuid())
-  studentId   String
-  student     Student  @relation(fields: [studentId], references: [id])
-  
-  marksMath   Int      @default(0)
-  marksPhy    Int      @default(0)
-  marksChem   Int      @default(0)
-  totalMarks  Int      @default(0)
-  
-  completedAt DateTime @default(now())
-  
-  responses   Response[]
+  id              String         @id @default(uuid())
+  studentId       String
+  examId          String?
+  examType        String         @default("KCET")
+  marksMath       Int            @default(0)
+  marksPhy        Int            @default(0)
+  marksChem       Int            @default(0)
+  sectionScores   Json?
+  totalMarks      Int            @default(0)
+  rank            Int?
+  tabSwitchCount  Int            @default(0)
+  completedAt     DateTime       @default(now())
+  student         Student        @relation(fields: [studentId], references: [id])
+  exam            Exam?          @relation(fields: [examId], references: [id])
+  responses       Response[]
+  examResponses   ExamResponse[]
 }
 
 model Response {
   id         String   @id @default(uuid())
   resultId   String
-  result     Result   @relation(fields: [resultId], references: [id])
   questionId String
-  question   Question @relation(fields: [questionId], references: [id])
-  answer     String?  // A, B, C, D or null
+  answer     String?
   isCorrect  Boolean  @default(false)
+  question   Question @relation(fields: [questionId], references: [id])
+  result     Result   @relation(fields: [resultId], references: [id])
+}
+
+model ExamResponse {
+  id             String       @id @default(uuid())
+  resultId       String
+  examQuestionId String
+  answer         String?
+  isCorrect      Boolean      @default(false)
+  examQuestion   ExamQuestion @relation(fields: [examQuestionId], references: [id])
+  result         Result       @relation(fields: [resultId], references: [id])
 }

@@ -13,7 +13,8 @@ export async function POST(request: Request) {
                 optionC: body.optionC,
                 optionD: body.optionD,
                 correctOption: body.correctOption,
-                subject: body.subject
+                subject: body.subject,
+                examType: body.examType || 'KCET'
             }
         });
         return NextResponse.json({ ...q, createdAt: q.createdAt.toISOString() });

@@ -8,28 +8,67 @@ export const dynamic = 'force-dynamic';
 export default async function ExamPage() {
     const cookieStore = await cookies();
     const studentId = cookieStore.get('studentId')?.value;
+    if (!studentId) redirect('/login');
 
-    if (!studentId) {
-        redirect('/login');
+    const examId = cookieStore.get('examId')?.value;
+    const examTypeCookie = cookieStore.get('examType')?.value;
+
+    if (!examId) {
+        redirect('/student');
     }
 
-    // Fetch questions for each subject to ensure specific order: Physics, Chemistry, Math
-    const physicsQ = await prisma.question.findMany({ where: { subject: 'Physics' } });
-    const chemistryQ = await prisma.question.findMany({ where: { subject: 'Chemistry' } });
-    const mathQ = await prisma.question.findMany({ where: { subject: 'Mathematics' } });
+    const exam = await (prisma as any).exam.findUnique({
+        where: { id: examId },
+        include: { _count: { select: { questions: true } } }
+    });
 
-    // Combine them into one single array
-    const rawQuestions = [...physicsQ, ...chemistryQ, ...mathQ];
+    if (!exam || !exam.isLive) {
+        redirect('/student');
+    }
 
-    // Transform for client
-    const questions = rawQuestions.map(q => ({
-        id: q.id,
-        text: q.text,
-        options: [q.optionA, q.optionB, q.optionC, q.optionD],
-        correctOption: (q.correctOption.charCodeAt(0) - 'A'.charCodeAt(0)), // Convert 'A'->0
-        subject: q.subject
-    }));
+    // If exam has a Firebase CDN URL, ExamClient will fetch questions from there
+    // Otherwise fall back to Prisma (for backward-compat with non-published exams)
+    let clientQuestions: any[] = [];
 
-    // Pass data to Client Component
-    return <ExamClient questions={questions} studentId={studentId} />;
+    if (!exam.cdnUrl) {
+        // Fallback: load from Prisma
+        const rawQuestions = await (prisma as any).examQuestion.findMany({
+            where: { examId },
+            orderBy: { orderIndex: 'asc' }
+        });
+
+        if (!rawQuestions || rawQuestions.length === 0) {
+            redirect('/student');
+        }
+
+        let finalQuestions = [...rawQuestions];
+        if (exam.randomizeQuestions) {
+            finalQuestions = finalQuestions.sort(() => Math.random() - 0.5);
+        }
+
+        clientQuestions = finalQuestions.map((q: any) => ({
+            id: q.id,
+            text: q.text,
+            imageUrl: q.imageUrl || null,
+            options: [q.optionA, q.optionB, q.optionC, q.optionD],
+            correctOption: q.correctOption.charCodeAt(0) - 'A'.charCodeAt(0),
+            subject: q.subject || 'General',
+            section: q.subject || 'General',
+        }));
+    }
+
+    return (
+        <ExamClient
+            questions={clientQuestions}
+            studentId={studentId}
+            examId={examId}
+            examTitle={exam.title}
+            examType={examTypeCookie as any}
+            durationMinutes={exam.durationMinutes || 60}
+            marksPerQuestion={exam.marksPerQuestion || 1}
+            negativeMarking={exam.negativeMarking || 0}
+            cdnUrl={exam.cdnUrl || null}
+            randomize={exam.randomizeQuestions || false}
+        />
+    );
 }

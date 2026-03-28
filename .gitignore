@@ -40,4 +40,28 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# messy scripts
+/tmp
+/temp-req.js
+/temp-seed-admin.js
+/test2.js
+/update_config.js
+/update_seed_mapping.js
+/check_db.js
+/hardcode_db.js
+/getAdmin.js
+/clean_url.js
+/fix_env.js
+/debug_response.json
+/debug_response_2.json
+/debug_response_3.json
+/extracted_images
+/db_url.txt
+/db_url_clean.txt
+/mca_text.txt
+/deployment_list.txt
+/*.log
 /src/generated/prisma
+.vercel
+
+.env*.local

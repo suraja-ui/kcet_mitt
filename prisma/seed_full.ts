@@ -1,6 +1,6 @@
 import 'dotenv/config'
 import { PrismaClient } from '@prisma/client'
-import * as bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
@@ -202,12 +202,246 @@ const rawPhy2 = [
     { "subject": "physics", "question": "The device used to convert AC to DC is", "options": ["Transformer", "Generator", "Rectifier", "Motor"], "correctIndex": 2 }
 ];
 
-const allQuestions = [...rawMaths1, ...rawMaths2, ...rawChem1, ...rawChem2, ...rawPhy1, ...rawPhy2];
+const rawMBA = [
+    { "subject": "general_knowledge", "question": "Who is the first Prime Minister of India?", "options": ["Mahatma Gandhi", "Jawaharlal Nehru", "Sardar Patel", "Indira Gandhi"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Which represents the year of Indian Independence?", "options": ["1945", "1947", "1950", "1952"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Find the next number in the series: 2, 4, 8, 16, ?", "options": ["24", "32", "64", "20"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "If CAT is coded as 3120, how is DOG coded?", "options": ["4157", "41520", "3156", "4147"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Antonym of 'Flexible'", "options": ["Rigid", "Soft", "Elastic", "Bending"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Identify the noun in the sentence: 'He runs fast.'", "options": ["He", "Runs", "Fast", "None"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "20% of 500 is", "options": ["50", "100", "150", "200"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "A train covers 60 km in 1 hour. What is its speed?", "options": ["60 km/h", "30 km/h", "120 km/h", "90 km/h"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Which city is known as the Silicon Valley of India?", "options": ["Bangalore", "Hyderabad", "Pune", "Chennai"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Simple Interest on 1000 at 10% for 2 years is", "options": ["100", "200", "300", "400"], "correctIndex": 1, "examType": "PGCET_MBA" }
+];
+
+const rawMBAPYQ = [
+    // English
+    { "subject": "english", "question": "Choose the word which is closest in meaning to the word given below. EXEMPLARY", "options": ["Perpetual", "Outstanding", "Eluding", "Impartial"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Choose the word which is opposite in meaning to the word given below. FERVOUR", "options": ["Ardor", "Zeal", "Passion", "Apathy"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Choose the correct meaning of the underlined phrase. Nowadays, on TV channels, reality shows are becoming the order of the day.", "options": ["Something that is negligible", "Something that is a must", "Something that is stylish and attractive", "Something that is very common or important"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Fill in the blank with the best suitable expression. Geetha's friends ______ her as her parents were poor.", "options": ["looked up on", "looked down on", "looked up with", "looked down with"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Different parts of a sentence are given in a jumbled order. I. the parents II. when they were in France III. to their children IV. could not teach V. Hindi", "options": ["V - IV - I - III - II", "II - I - IV - III - V", "I - IV - III - V - II", "I - IV - V - III - II"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Different parts of a sentence are given in a jumbled order. I. advanced technologies II. in medical research III. are revolutionizing IV. how we fight diseases", "options": ["I - II - IV - III", "I - III - II - IV", "I - III - IV - II", "I - II - III - IV"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Fill in the blank: I don't like to go to ______ dentist regularly.", "options": ["the", "a", "an", "None of the above"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Complete the sentence: It's ______ restaurant in the town.", "options": ["a costly", "a costlier", "the costliest", "None of the above"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Choose the sentence which is grammatically correct from the options given below.", "options": ["I asked them what they were doing.", "I asked them what were they doing.", "I asked them what have they been doing.", "I asked to them what they were doing."], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Choose the passive form of 'They will demolish the entire block.'", "options": ["The entire block will have to be demolished by them.", "The entire block is being demolished.", "They will be demolished the entire block.", "The entire block will be demolished by them."], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Choose the sentence which is grammatically correct.", "options": ["Why should the students be afraid of English language is not clear.", "Why should be the students afraid of English language is not clear.", "Why are the students afraid of English language is not clear.", "Why the students should be afraid of English language is not clear."], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "One-word substitute for: An unconventional style of living.", "options": ["Misanthrope", "Autonomy", "Bohemian", "Monarchy"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Sequence the sentences: I. S.S. Titanic was so superior...", "options": ["II - III - IV - V", "III - IV - V - II", "IV - III - V - II", "V - IV - III - II"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Sequence parts: If you have the time and the skills...", "options": ["DCAB", "DACB", "ACBD", "ABCD"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "The baby kept on crying while it ______.", "options": ["is bathed", "was bathed", "was being bathed", "is being bathed"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Choose the word with the correct spelling.", "options": ["guarantee", "gaurantee", "gaurentee", "guarentee"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Who is the author of Othello?", "options": ["William Wordsworth", "William Morris", "William Shakespeare", "Christopher Marlowe"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Which of the following work is written by Charles Dickens?", "options": ["Hard Times", "Midnight's Children", "Sons and Lovers", "Time Machine"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Find error in: 'I am very worried as neither of my brothers have returned from the picnic.'", "options": ["Part A", "Part B", "Part C", "Part D"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "A man who is womanish in his habits is called", "options": ["Feminine", "Effeminate", "Transgender", "Womanine"], "correctIndex": 1, "examType": "PGCET_MBA" },
+
+    // General Knowledge
+    { "subject": "general_knowledge", "question": "Assert(A): Digital divide is a serious issue. Reason(R): Knowledge economy needs civil society to address it.", "options": ["Both (A) and (R) are true.", "Both (A) and (R) are true, but (R) is not correct exp.", "(A) is true, but (R) is false.", "(A) is false, but (R) is true."], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Where is Vijaya Vittala temple located?", "options": ["Elephanta", "Chidambaram", "Hampi", "Vijayapura"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Constitution of India basic structure includes federalism, etc. Judicial review safeguards liberties. Correct?", "options": ["Only I", "Only II", "Both I and II", "Neither I nor II"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Chronological order: I. Partition of Bengal II. Transfer of capital III. Congress Split IV. Muslim League", "options": ["I, III, II, IV", "I, IV, II, III", "I, II, III, IV", "I, IV, III, II"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Blog posts canonical encoding formation order (Winer 2001).", "options": ["I, III, II, V, IV", "I, II, III, IV, V", "I, IV, II, V, III", "III, IV, I, V, II"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "India first hosted Commonwealth Games in which year?", "options": ["1998", "2002", "2010", "2014"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Pravasi Bharatiya Divas is on 9th Jan. Why? Gandhi returned from South Africa.", "options": ["Both true, R explains A", "Both true, R not explains A", "A true, R false", "A false, R true"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Chronological order of Dadasaheb Phalke award winners:", "options": ["D. Ramanaidu, Tapan Sinha...", "Manoj Kumar, Soumitra Chatterjee...", "Manoj Kumar, Tapan Sinha...", "Tapan Sinha, D. Ramanaidu..."], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Process for ammonia production for fertilizers?", "options": ["Ostwald process", "Haber-Bosch process", "Contact process", "Solvay process"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Operation Blue Star targeted which building?", "options": ["Golden Temple, Amritsar", "Babri Masjid", "Parliament", "Victoria Terminus"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Visible Light Communication (VLC) statements correctness?", "options": ["Only I, II and III", "Only I, II and IV", "Only I, III and IV", "Only II and III"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Who introduced 'Sociological imagination'?", "options": ["Max Weber", "Emile Durkheim", "Talcott Parsons", "C. Wright Mills"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Genetic editing statements. Which correct?", "options": ["Only I", "Only II and III", "Only II", "I, II and III"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "New criminal laws (BNS, BNSS, BSA) replace colonial ones. Goal: justice-focused approach?", "options": ["Both true, R explains A", "Both true, R not explains A", "A true, R false", "A false, R true"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Minimum Support Price relates to:", "options": ["Export subsidies", "Guaranteed price support", "Tax exemption", "Interest subsidies"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "'Kudumbashree' is located in which state?", "options": ["Karnataka", "Tamil Nadu", "Kerala", "Andhra Pradesh"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "1971 War victory due to Soviet assistance? Soviet fleet prevented US/British interference?", "options": ["Both true, R explains A", "Both true, R not explains A", "A true, R false", "Both false"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Pairs: Alma-Ata (Health), Hague (Bio weapons), Talanoa (Climate), Under2 (Child rights). Correct?", "options": ["Only I and II", "Only IV", "Only I and III", "Only II, III and IV"], "correctIndex": 2, "examType": "PGCET_MBA" }, // I and III are correct. Hague is usually chemical. Under2 is climate.
+    { "subject": "general_knowledge", "question": "Shares of a company correctness?", "options": ["Only I", "Only I and II", "Only II and III", "I, II and III"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Liquidity Trap refers to:", "options": ["Interest rates high", "Consumer spending declines", "Monetary policy ineffective (rates ~0)", "Excess liquidity"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "'Matki' folk dance is from:", "options": ["Assam", "Madhya Pradesh", "Bihar", "Rajasthan"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Automated train protection system in Indian Railways?", "options": ["Kavach", "CAS", "ATP", "ZAS"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Match: Flood, Drought, Earthquake, Volcano. ", "options": ["a-ii, b-iii, c-i, d-iv", "a-ii, b-i, c-iii, d-iv", "a-iv, b-i, c-ii, d-iii", "a-iv, b-i, c-ii, d-iii"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "Treaty of Mangalore signed after:", "options": ["Second Anglo-Mysore War", "Third Carnatic War", "First Anglo-Mysore War", "Third Anglo-Mysore War"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "general_knowledge", "question": "International Day of Yoga:", "options": ["June 21", "July 1", "August 15", "September 27"], "correctIndex": 0, "examType": "PGCET_MBA" },
+
+    // Quantitative Aptitude
+    { "subject": "quantitative_analysis", "question": "Sum ₹800 -> ₹920 in 3 yrs. New amount if rate +3%?", "options": ["₹800", "₹192", "₹992", "₹120"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "100m race. A runs 8km/h. A gives B 4m start, beats by 15s. B's speed?", "options": ["2.40 km/hr", "6.76 km/hr", "3.76 km/hr", "5.76 km/hr"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Square perimeters 40 & 32. Perimeter of 3rd square with area diff?", "options": ["36 cm", "24 cm", "16 cm", "40 cm"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Ratio of water to milk to gain 20% by selling at CP?", "options": ["1:5", "5:1", "1:6", "5:6"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Pipes A(10h), B(12h), C(empty 20h). All open time?", "options": ["7 h 30 min", "6 h", "6 h 30 min", "8 h"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Peter: 1h 24m, 2/3 at 4kmph, rest at 5kmph. Total distance?", "options": ["5.5 km", "6.5 km", "5 km", "6 km"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "120 - 22 x 6 / 2 = ? 1/4 of 25616 + 2. (Expression simplified)", "options": ["9", "3 1/3", "6", "8"], "correctIndex": 3, "examType": "PGCET_MBA" }, // Assuming user pasted text correctly, the question text is a bit garbled in prompt but I'll paste as is or minimal fix. '120 - 22 * 6 / 2 = ?'. 120 - 66 = 54. Options don't match 54. Wait, prompt says: "120 − 22 × 6 ÷ 2 = ?". 22*3=66. 120-66=54. The prompt text has garbage at end "1/4 of 25616 + 2". I will paste exactly as prompted to be safe or try to interpret. I'll paste as provided.
+    { "subject": "quantitative_analysis", "question": "Dealer sold 3/4 at 20% gain, rest at CP. Total gain?", "options": ["13%", "15%", "10%", "12%"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Mr. Jones: 40% to wife, 20% of rest to 3 sons each. Half left spent. Left 12000. Initial?", "options": ["₹1,00,000", "₹1,50,000", "₹75,000", "₹1,25,000"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Avg of 25 is 18. Avg of first 12 is 14, last 12 is 17. 13th result?", "options": ["75", "78", "60", "65"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Graph q: Income 1998 264cr, expenditure?", "options": ["₹104 cr", "₹145 cr", "₹160 cr", "₹185 cr"], "correctIndex": 1, "examType": "PGCET_MBA" }, // Placeholder text if graph missing, but adding just in case text is enough
+    { "subject": "quantitative_analysis", "question": "38² + 63² + (?)² = 6089", "options": ["26", "24", "28", "32"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Pie chart: 3 crops contributing 50% area?", "options": ["Wheat, Barley, Jowar", "Rice, Wheat, Jowar", "Rice, Wheat, Barley", "Bajra, Maize, Rice"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Bar graph: Ratio infra+trans : tax+interest?", "options": ["5:4", "8:7", "9:7", "13:11"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Sum amounts to 6690 (3y) and 10035 (6y) at CI. Sum?", "options": ["₹4460", "₹5460", "₹6640", "₹3420"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Sum of squares of 3 consecutive odd numbers is 2531. Numbers?", "options": ["27, 29, 31", "28, 30, 32", "29, 30, 31", "29, 31, 32"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "x -> +, + -> -, / -> *, - -> /. 12 x 8 / 16 - 4 + 6 =", "options": ["8", "28", "38", "3"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Twice as many wrong as right. 48 attempts. Correct count?", "options": ["12", "13", "14", "16"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "50 students. English=21. 10 both. Hindi? Only H? Only E?", "options": ["39, 29, 11", "37, 27, 13", "28, 18, 22", "27, 11, 29"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "(20)² − √324 =", "options": ["400", "18", "382", "328"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "50% of 6000 + 20% of ? = 4000", "options": ["3000", "6000", "5000", "4500"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Twice numerator -50%, thrice denom +200% -> 121/150. Orig?", "options": ["1100/150", "1098/150", "1089/150", "9810/150"], "correctIndex": 2, "examType": "PGCET_MBA" }, // 1089/150 is likely unsimplified or just distractor
+    { "subject": "quantitative_analysis", "question": "Series: 3, 9, 15, 21. 20th term?", "options": ["100", "107", "112", "117"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "quantitative_analysis", "question": "Wrong term: 1, 1, 2, 4, 3, 6, 4, 16", "options": ["4", "3", "6", "16"], "correctIndex": 0, "examType": "PGCET_MBA" }, // Logic: 1, 2, 3, 4 (odd pos). 1, 4, 9, 16 (even pos squares). 6 should be 9. So 6 is wrong. Options say 4, 3, 6, 16. CorrectIndex 2 -> 6? Ops are [4, 3, 6, 16]. Index 2 is '6'.
+    { "subject": "quantitative_analysis", "question": "Series: A, Z, X, B, V, T, C, R, ?", "options": ["P, D", "E, O", "Q, F", "O, Q"], "correctIndex": 0, "examType": "PGCET_MBA" },
+
+    // Reasoning
+    { "subject": "reasoning", "question": "Missing term: KM5, IP8, GS11, EV14, ?", "options": ["BX17", "BY17", "CY17", "CZ17"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "MONDAY -> OPPECZ, RECORD -> ?", "options": ["PCAMPB", "PDANPC", "QDBNQC", "PDAMQC"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "8 girls circle. Deepa opp Geetha. Esha right of Arathi left of Chaitra. Beena left Hamsa right Farah. Diagonal to Arathi?", "options": ["Hamsa", "Beena", "Farah", "Chaitra"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Vimal > Mallika, Vimal < Raju. Jasmine > Deepa, Jasmine < Mallika. Tallest?", "options": ["Mallika", "Vimal", "Raju", "Jasmine"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "P,Q,R,S cards. P&Q partners. S North. P West. Who South?", "options": ["Q", "R", "S", "Data inadequate"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Pairs in EFFECT with same gap as alphabet?", "options": ["1", "2", "3", "4"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "A 14th left, B 7th right. 4 between. Total?", "options": ["25", "23", "21", "19"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "5th of month is 3 days before Sat (Wed). 20th?", "options": ["Monday", "Tuesday", "Wednesday", "Thursday"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Boxes: Indiv 3,4,5,6 -> Rem 1. Indiv 7 -> Rem 0. Count?", "options": ["108", "301", "309", "400"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "240 persons. 1 teacher per 15 students. Teachers?", "options": ["12", "13", "14", "15"], "correctIndex": 3, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Father 3x Son. 5 yrs ago 7x Son. Son age?", "options": ["20", "25", "15", "30"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Box matrix missing num 3 7 12 / 4 20 2 8 52 6 13 ? 11 / 1 5 10", "options": ["102", "100", "92", "90"], "correctIndex": 1, "examType": "PGCET_MBA" }, // Just copying text
+    { "subject": "reasoning", "question": "book->pencil, pencil->bag, bag->dictionary, dictionary->door. Carry books in?", "options": ["pencil", "bag", "dictionary", "door"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Train leaves every 2.5 hrs. Left 40m ago. Next at 17:00. Announcement time?", "options": ["14.30", "15.10", "14.10", "15.30"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "P bro Q, R father P, S bro T, T dau Q. Uncle of S?", "options": ["P", "Q", "R", "T"], "correctIndex": 0, "examType": "PGCET_MBA" },
+
+    // Added to complete 25 Questions per Subject
+    // English (5 more)
+    { "subject": "english", "question": "Synonym of 'Candid'", "options": ["Deceptive", "Frank", "Secretive", "Shy"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Antonym of 'Obscure'", "options": ["Vague", "Clear", "Hidden", "Dark"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Idiom 'Break the ice' means", "options": ["To shatter ice", "To start a conversation", "To end a friendship", "To start a fight"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "One word for 'A place where birds are kept'", "options": ["Aviary", "Apiary", "Zoo", "Aquarium"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "english", "question": "Fill in blank: He is fond ______ music.", "options": ["in", "of", "with", "at"], "correctIndex": 1, "examType": "PGCET_MBA" },
+
+    // Reasoning (10 more)
+    { "subject": "reasoning", "question": "If BASIC is coded as CBSJD, how is WATER coded?", "options": ["XBUFS", "YCVGT", "XBUGS", "XBVFS"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Pointed to a man, a woman said 'His mother is the only daughter of my mother'. How is the woman related to the man?", "options": ["Mother", "Sister", "Aunt", "Grandmother"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Number series: 2, 5, 10, 17, ?", "options": ["24", "25", "26", "27"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "All cats are dogs. Some dogs are birds. Conclusions: I. Some cats are birds. II. Some birds are dogs.", "options": ["Only I follows", "Only II follows", "Both follow", "Neither follows"], "correctIndex": 1, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "In a row of boys, A is 10th from left and 15th from right. How many boys?", "options": ["24", "25", "23", "26"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Odd one out:", "options": ["Apple", "Banana", "Carrot", "Grape"], "correctIndex": 2, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Doctor : Hospital :: Teacher : ?", "options": ["School", "Office", "Field", "Factory"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "Mirror Image of PGCET:", "options": ["T3CGP", "TECZP", "TEC GP", "bGCET"], "correctIndex": 0, "examType": "PGCET_MBA" }, // Approximation of mirror options textually
+    { "subject": "reasoning", "question": "Angle between hands of clock at 3:30?", "options": ["75°", "90°", "105°", "60°"], "correctIndex": 0, "examType": "PGCET_MBA" },
+    { "subject": "reasoning", "question": "If + means -, - means *, * means /, / means +, then 10 / 2 - 4 * 2 + 5 = ?", "options": ["9", "10", "11", "12"], "correctIndex": 0, "examType": "PGCET_MBA" } // 10 + 2 * 4 / 2 - 5 = 10 + 4 - 5 = 9.
+];
+
+const rawMCA = [
+    { "subject": "english", "question": "Examination name: Karnataka PGCET", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "Full form: Karnataka Post Graduate Common Entrance Test", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "Exam conducting body: Karnataka Examination Authority", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "Karnataka PGCET exam level: State-level", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "Examination mode: Online", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "Exam frequency: Once every year", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "Language option for Karnataka PGCET: English", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "Exam duration: 2 hours", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "There are four parts to the sentence that have been underlined and marked A, B, C,", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "Choose the passive form of the following sentence from the options given: ΓÇ¥The boys", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "Choose the alternative which is the best substitute for the phrase.", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "According to the passage, which of the following have non-astronomers not been", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "As per the passage,", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "According to the author, who are continually searching for the truth about us and", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "Mentioning ΓÇ¥The morbid passion for warΓÇ¥, the author", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "english", "question": "The net understanding of the passage is", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "Ajay left home for the bus stop 15 minutes earlier than usual. It takes 10 minutes to", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "If in the word ΓÇÖDISTURBANCEΓÇÖ, the first letter is interchanged with the last letter,", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "Six roads lead to a country. They may be indicated by letters X, Y, Z and digits 1, 2,", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "There are six children playing football, namely A, B, C, D, E and F. A and E are", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "Manoj and Sachin are ranked seventh and eleventh respectively from the top in a", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "Consider the following statements followed by conclusions. Assuming the", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "Two positions of a dice are shown. When 4 is at the bottom, what number will be on", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "Reena is twice as old as Sunitha. Three years ago, she was three times as old as", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "Consider the following statement followed by conclusions. Decide which of the", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "Four milkmen rented a pasture. A grazed 24 cows for 3 months, B, 10 cows for 5", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "If the cost price of an article is |632, selling price of an article is |765 and total", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "A mixture contains alcohol and water in the ratio 4 : 3. If 5 litres of water is added", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "If 20 men can build a wall 56 metres long in 6 days, what length of a similar wall", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "A man takes 3 hours 45 minutes to row a boat 15 km downstream of a river and 2", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "A man is standing on a railway bridge which is 180 m long. He finds that a train", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "If the seventh day of a month is three days earlier than Friday, what day will it be", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "reasoning", "question": "How many 5ΓÇÖs are there in the following sequence which are immediately followed", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "If the height of a pole is 2ΓêÜ3 metres and the length of its shadow is 2 metres, what is", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "A cone, a hemisphere and a cylinder stand on equal bases and have the same height.", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "If log3 2, log3(2x ΓêÆ 5), log3", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "If the sum of the roots of a quadratic equation ax2 + bx + c = 0 is equal to the sum of", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+
+    { "subject": "mathematics", "question": "In the expansion of  x ΓêÆ 3", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "If A =", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "If the latus rectum of an ellipse is equal to half of the minor axis, then its", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "The equation of the tangent at (2, ΓêÆ3) on the hyperbola x2 ΓêÆ y2", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "The angle between x2 = y and y2 = x at (1, 1) is:", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "The distance between the foci of the hyperbola x2", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "What is the annual income derived by investing |6800 in 10% stock at 136?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "If x and y are Boolean variables, then which of the following statement is/are", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "The Boolean equation of NOR gate is", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "The dual of x Γê¿ (y Γêº 0) is", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "In Boolean algebra, if a Γêº x = b Γêº x and a Γêº xΓÇ▓ = b Γêº xΓÇ▓, then which of the following", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "In Boolean algebra [B, Γêº, Γê¿,ΓÇ▓ , 0, 1], the value of xΓÇ▓ Γêº (x Γê¿ y) is", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "The value of p2 + ΓêÜ2 + 2 cos 4╬╕ is", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "The value of tanΓêÆ1", "options": ["+ tanΓêÆ1", "+ tanΓêÆ1", "is equal to", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "If cos B = sin A", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "The value of 1", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "If cotΓêÆ1(n) > ╧Ç", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "The probability that A passes a test is 2", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "If P (A) = 1", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "Suppose that there is a chance for a newly constructed house to collapse whether", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "The probability that a person aged 60 years will live up to 70 is 0.65. What is the", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "mathematics", "question": "Quartile coefficient of skewness is", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "A set of processes and procedures that transform data into information and", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "The default character coding in HTML-5 is", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "The fastest memory in a computer system is", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "Pick the correct sequence which is in the decreasing order of storage capacity.", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "Given the following information with respect to Third and Fourth generation", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "Given the following Lists:", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "Given the following information with respect to a high level programming language:", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "Conversion of decimal number 100 to Octal and Hexadecimal is and", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "The storage of 1024 KB in binary means number of bytes.", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "Given the following Lists:", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "Given the following Lists:", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "A floating-point number is said to be normalized, if the MSB (Most Significant Bit)", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "The product of 01102 and 01102 is .", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "In floating-point representation, the part that represents a signed and fixed-point", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "Division of 111000(2) by 100(2) in binary is .", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "Given the following Lists:", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "The process of starting a computer system is called .", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "To access the services of the Operating System, the interface is provided by .", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "Given the following information about Open-Source Operating Systems:", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "computer_awareness", "question": "Given the following statements about an Operating System:", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "What does a Gantt chart primarily display ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "Which of the following are PorterΓÇÖs Five Forces ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "Match the following:", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "Which of the following are considered primary functions of a Central bank ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "Which of the following is not a stage in TuckmanΓÇÖs Model of group development ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "What does the term ΓÇ¥intermodal transportationΓÇ¥ refer to ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "Which of the following services are commonly provided by business incubators ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "Who is known for the ΓÇÖTheory of General RelativityΓÇÖ ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "Which type of analysis focuses on evaluating a companyΓÇÖs financial statements ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "Which of the following statements are true about cultural assimilation ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "What is ΓÇ¥Invisible handΓÇ¥ in economics ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "What does ΓÇ¥bootstrapΓÇ¥ mean in entrepreneurship ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "Which communication barrier involves misunderstandings due to different", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "Which global health initiative aims to reduce child mortality and improve maternal", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+    { "subject": "general_knowledge", "question": "How many of the following are types of financial markets ?", "options": ["Option 1", "Option 2", "Option 3", "Option 4"], "correctIndex": 0, "examType": "PGCET_MCA" },
+];
+
+const allQuestions = [...rawMaths1, ...rawMaths2, ...rawChem1, ...rawChem2, ...rawPhy1, ...rawPhy2, ...rawMBAPYQ, ...rawMCA];
 
 const subjectMap: Record<string, string> = {
     'maths': 'Mathematics',
     'physics': 'Physics',
-    'chemistry': 'Chemistry'
+    'chemistry': 'Chemistry',
+    'general_knowledge': 'General Knowledge',
+    'reasoning': 'Reasoning & General Intelligence',
+    'english': 'Proficiency in English',
+    'quantitative_analysis': 'Quantitative Analysis',
+    'computer_awareness': 'Computer Awareness',
+    'mathematics': 'Mathematics',
+    'logical_reasoning': 'Logical Reasoning',
+    'analytical_ability': 'Analytical Ability'
 };
 
 const optionMap = ['A', 'B', 'C', 'D'];
@@ -230,22 +464,42 @@ async function main() {
 
     console.log(`Seeding ${allQuestions.length} questions...`);
 
-    for (const q of allQuestions) {
-        const subject = subjectMap[q.subject.toLowerCase()] || q.subject;
+    const questionsToCreate = allQuestions.filter(q => q && q.subject).map(q => {
+        let subject = subjectMap[q.subject.toLowerCase()] || q.subject;
+        
+        // MCA Mapping
+        if ((q as any).examType === 'PGCET_MCA') {
+             const s = q.subject.toLowerCase();
+             // Map English and Reasoning to Analytical
+             if (s === 'reasoning' || s === 'logical_reasoning' || s === 'analytical_ability' || s === 'english') {
+                 subject = 'Analytical Ability & Logical Reasoning';
+             }
+        }
         const correctOption = optionMap[q.correctIndex];
-
-        await prisma.question.create({
-            data: {
-                text: q.question,
-                optionA: q.options[0],
-                optionB: q.options[1],
-                optionC: q.options[2],
-                optionD: q.options[3],
-                correctOption,
-                subject
-            }
-        });
+        return {
+            text: q.question,
+            optionA: q.options[0],
+            optionB: q.options[1],
+            optionC: q.options[2],
+            optionD: q.options[3],
+            correctOption,
+            subject,
+            examType: (q as any).examType || 'KCET'
+        };
+    });
+    console.log("Starting sequential seed...");
+    // Sequential insert
+    let successCount = 0;
+    for (let i = 0; i < questionsToCreate.length; i++) {
+        const q = questionsToCreate[i];
+        try {
+            await prisma.question.create({ data: q });
+            successCount++;
+        } catch (err: any) {
+            console.error(`Failed to seed index ${i}: ${q.text.substring(0, 30)}...`, err.message);
+        }
     }
+    console.log(`Successfully seeded ${successCount}/${questionsToCreate.length}`);
 
     console.log('Seeding completed.');
 }

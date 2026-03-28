@@ -1,0 +1,16 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // ─── Public exam question JSON (CDN) ─────────────────────────────────────
+    match /exams/{examId} {
+      allow read: if true;   // Anyone can download the question paper (no answers inside)
+      allow write: if false; // Only Admin SDK writes (triggered on publish)
+    }
+
+    // ─── Everything else: locked ─────────────────────────────────────────────
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
